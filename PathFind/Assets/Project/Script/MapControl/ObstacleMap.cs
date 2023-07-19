@@ -83,9 +83,25 @@ public class ObstacleMap : TileMapController
         // } 출발지와 목적지를 설정해서 타일을 배치한다.
 
         // { 출발지와 목적지에 지물을 추가한다.
+        GameObject changedTilePrefab = ResManager.Instance.obstaclePrefabs[RDefine.OBSTACLE_PREF_PLAIN_CASTLE];
+        GameObject tempChangeTile = default;
+        for(int i=0;i<2;i++)
+        {
+            tempChangeTile = Instantiate(changedTilePrefab, tileMap.transform);
+            tempChangeTile.name = string.Format("{0}_{1}", changedTilePrefab.name, passsableTerrains[i].TileIdx1D);
+
+            tempChangeTile.SetLocalScale(passsableTerrains[i].transform.localScale);
+            tempChangeTile.SetLocalPos(passsableTerrains[i].transform.localPosition);
+
+            // 출발지와 목적지를 캐싱한다
+            castleObjs[i] = tempChangeTile;
+            AddObstacle(tempChangeTile);
+
+            tempChangeTile = default;
+        }       //loop : 출발지와 목적지를 인스턴스화 해서 캐싱하는 루프
         // } 출발지와 목적지에 지물을 추가한다.
 
-
+        Update_SourceDestToPathFinder();
     }       //DoStart()
 
     //! 지물을 추가한다.
@@ -94,6 +110,11 @@ public class ObstacleMap : TileMapController
         allTileObjs.Add(obstacle_);
     }       //AddObstacle()
 
-
+    //! 패스 파인더에 출발지와 목적지를 설정한다.
+    public void Update_SourceDestToPathFinder()
+    {
+        PathFinder.Instance.sourceObj = castleObjs[0];
+        PathFinder.Instance.destinationObj = castleObjs[1];
+    }       //Update_SourceDestToPathFinder()
 
 }
